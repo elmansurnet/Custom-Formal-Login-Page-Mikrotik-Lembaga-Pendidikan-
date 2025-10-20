@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="pragma" content="no-cache" />
+<meta http-equiv="expires" content="-1" />
+<title>Hotspot UNISYA - Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --green-main: #007F3D;
+  --green-light: #E6F4EA;
+  --green-dark: #0D1F16;
+  --text-light: #f1f1f1;
+  --text-dark: #222;
+  --card-light: #ffffff;
+  --card-dark: #1a1a1a;
+  --border-radius: 14px;
+  --transition: all 0.3s ease;
+}
+
+/* Body dasar */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: var(--transition);
+  overflow-x: hidden;
+}
+
+/* Mode Light */
+body.light {
+  background: var(--green-light);
+  color: var(--text-dark);
+}
+body.light .card {
+  background: var(--card-light);
+  color: var(--text-dark);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+body.light .input {
+  background: #fff;
+  color: #222;
+  border: 1px solid #ccc;
+}
+body.light .btn {
+  background: var(--green-main);
+  color: #fff;
+}
+body.light svg {
+  fill: #007F3D;
+}
+
+/* Mode Dark */
+body.dark {
+  background: var(--green-dark);
+  color: var(--text-light);
+}
+body.dark .card {
+  background: var(--card-dark);
+  color: var(--text-light);
+  box-shadow: 0 0 12px rgba(0,0,0,0.6);
+}
+body.dark .input {
+  background: #222;
+  color: #fff;
+  border: 1px solid #333;
+}
+body.dark .btn {
+  background: var(--green-main);
+  color: #fff;
+}
+body.dark svg {
+  fill: #E6F4EA;
+}
+
+/* Tombol Light/Dark */
+.theme-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: 2px solid var(--green-main);
+  border-radius: 25px;
+  width: 80px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 1000;
+  opacity: 1;
+}
+body.dark .theme-toggle {
+  border-color: #E6F4EA;
+}
+.theme-toggle.hide {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-20px);
+}
+.theme-toggle span {
+  font-size: 12px;
+  font-weight: 600;
+}
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Card login */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  max-width: 900px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-sizing: border-box;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease forwards;
+  margin-top: 20px;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Carousel di dalam card */
+.card-carousel {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.card-carousel img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+.card-carousel img.active { opacity: 1; }
+.card-carousel .caption {
+  position: absolute;
+  bottom: 10%;
+  left: 8%;
+  color: #fff;
+  font-size: 1.2em;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(0,0,0,0.6);
+}
+.card-carousel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.7) 100%);
+}
+
+/* Area form */
+.form-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+  box-sizing: border-box;
+  width: 100%;
+  justify-content: flex-start; /* ✅ pastikan isi mulai dari atas, bukan rata tengah */
+  text-align: center;
+}
+
+/* ✅ Jaga agar teks UNISYA tetap satu baris */
+.form-area h2, 
+.form-area h3 {
+  white-space: nowrap;
+  line-height: 1.4;
+  margin: 0 0 10px 0;
+}
+
+/* ✅ Atur agar blok Mikrotik (if error / if trial) tampil normal */
+.form-area p,
+.form-area form,
+.form-area span {
+  white-space: normal;
+}
+.logo img {
+  width: 80px;
+  margin-bottom: 6px;
+}
+.title {
+  font-weight: 600;
+  color: var(--green-main);
+  margin-bottom: 5px;
+}
+.subtitle {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+/* Input Group */
+.input-group {
+  position: relative;
+  margin-bottom: 18px;
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+}
+.input-group input {
+  width: 100%;
+  padding: 10px 42px 10px 42px;
+  border-radius: var(--border-radius);
+  outline: none;
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+.input-group svg.icon-left {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  opacity: 0.7;
+}
+.input-group .eye {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.input-group .eye svg {
+  width: 20px;
+  height: 20px;
+  transition: var(--transition);
+}
+
+/* Button */
+.btn {
+  width: 100%;
+  max-width: 380px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn:hover { opacity: 0.9; }
+
+/* Footer */
+.footer {
+  font-size: 12px;
+  margin-top: 20px;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* RESPONSIVE */
+@media (min-width: 768px) {
+  .card {
+    flex-direction: row;
+    align-items: stretch;
+    height: auto; /* Tinggi menyesuaikan isi */
+  }
+
+  .card-carousel {
+    flex: 1;
+    min-height: 400px; /* Memberi tinggi minimal agar seimbang */
+    height: auto;
+    border-bottom: none;
+    border-right: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .form-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 30px; /* Tambahan ruang agar tidak mepet */
+  }
+
+  .footer {
+    margin-top: 30px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Tombol Light/Dark -->
+<div class="theme-toggle" id="themeToggle" title="Ganti Mode">
+  <svg id="themeIcon" viewBox="0 0 24 24"><path d="M12 4a1 1 0 010 2 6 6 0 000 12 1 1 0 010 2 8 8 0 010-16z"/></svg>
+  <span id="themeLabel">Light</span>
+</div>
+
+<!-- Mikrotik -->
+$(if chap-id)
+<form name="sendin" action="$(link-login-only)" method="post">
+  <input type="hidden" name="username" />
+  <input type="hidden" name="password" />
+  <input type="hidden" name="dst" value="$(link-orig)" />
+  <input type="hidden" name="popup" value="true" />
+</form>
+<script src="/md5.js"></script>
+<script>
+function doLogin() {
+  document.sendin.username.value = document.login.username.value;
+  document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+  document.sendin.submit();
+  return false;
+}
+</script>
+$(endif)
+
+<!-- Card Login dengan Carousel -->
+<div class="card">
+  <div class="card-carousel">
+    <img src="img/unisya1.jpg" class="active" alt="UNISYA 1">
+    <img src="img/unisya2.jpg" alt="UNISYA 2">
+    <img src="img/unisya3.jpg" alt="UNISYA 3">
+    <div class="caption">Universitas Islam Syarifuddin Lumajang</div>
+  </div>
+
+  <div class="form-area">
+    <div class="logo">
+      <img src="img/unisya-logo.png" alt="Logo UNISYA">
+    </div>
+    <div class="title">Hotspot UNISYA</div>
+    <div class="subtitle">Silakan login untuk mengakses internet</div>
+
+    $(if error)
+    <div style="background:#B00020;color:#fff;padding:8px;border-radius:6px;margin-bottom:10px;">$(error)</div>
+    $(endif)
+
+    <form name="login" action="$(link-login-only)" method="post" $(if chap-id) onSubmit="return doLogin()" $(endif)>
+      <input type="hidden" name="dst" value="$(link-orig)">
+      <input type="hidden" name="popup" value="true">
+
+      <div class="input-group">
+        <svg class="icon-left" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3.33 0-10 1.67-10 5v1h20v-1c0-3.33-6.67-5-10-5z"/></svg>
+        <input class="input" type="text" name="username" placeholder="Username" value="$(username)" />
+      </div>
+
+      <div class="input-group">
+        <svg class="icon-left" viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v4H5v13h14V10h-2V6a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v4H9z"/></svg>
+        <input class="input" type="password" id="password" name="password" placeholder="Masukkan password">
+        <span class="eye" id="toggleEye">
+          <svg id="eyeIcon" viewBox="0 0 24 24">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12zm11 4a4 4 0 1 0-4-4 4 4 0 0 0 4 4z"/>
+          </svg>
+        </span>
+      </div>
+
+      <button type="submit" class="btn">Masuk</button>
+
+      $(if trial == 'yes')
+      <div style="margin-top:10px;">
+        Akses gratis tersedia, <a href="$(link-login-only)?dst=$(link-orig-esc)&username=T-$(mac-esc)" style="color:var(--green-main);font-weight:600;">klik di sini</a>
+      </div>
+      $(endif)
+    </form>
+
+    <div class="footer">
+      © <span id="year"></span> Universitas Islam Syarifuddin (UNISYA) Lumajang<br>
+      Powered by MikroTik RouterOS
+    </div>
+  </div>
+</div>
+
+<script>
+// Carousel otomatis
+let slides = document.querySelectorAll('.card-carousel img');
+let captions = ["Unggul, Islami, Berdaya Saing", "Menginspirasi Generasi", "Universitas Islam Syarifuddin Lumajang"];
+let cap = document.querySelector('.card-carousel .caption');
+let index = 0;
+setInterval(() => {
+  slides[index].classList.remove('active');
+  index = (index + 1) % slides.length;
+  slides[index].classList.add('active');
+  cap.textContent = captions[index];
+}, 4000);
+
+// Toggle password
+const pwd = document.getElementById("password");
+const toggleEye = document.getElementById("toggleEye");
+const eyeIcon = document.getElementById("eyeIcon");
+
+toggleEye.addEventListener("click", () => {
+  if (pwd.type === "password") {
+    pwd.type = "text";
+    eyeIcon.innerHTML = '<path d="M2.39 1.73L1.11 3l3.36 3.36A10.94 10.94 0 0 0 1 12s4 7 11 7c2.21 0 4.23-.57 6-1.54l2.27 2.27 1.27-1.27zM12 17c-3.33 0-10-1.67-10-5 0-1.09.5-2.08 1.36-2.93l1.45 1.45A3.98 3.98 0 0 0 12 16a3.98 3.98 0 0 0 3.48-2.08l1.46 1.46C15.73 16.42 13.94 17 12 17zm7.64-4.93A10.94 10.94 0 0 0 23 12s-4-7-11-7c-1.29 0-2.52.2-3.66.54l1.54 1.54A4 4 0 0 1 16 12a3.98 3.98 0 0 1-1.06 2.73l1.45 1.45c1.02-.73 1.89-1.61 2.65-2.61z"/>';
+  } else {
+    pwd.type = "password";
+    eyeIcon.innerHTML = '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12zm11 4a4 4 0 1 0-4-4 4 4 0 0 0 4 4z"/>';
+  }
+});
+
+// Tombol Light/Dark hide saat scroll
+const themeToggle = document.getElementById("themeToggle");
+let lastScroll = 0;
+window.addEventListener("scroll", () => {
+  const current = window.pageYOffset || document.documentElement.scrollTop;
+  if (current > lastScroll && current > 15) themeToggle.classList.add("hide");
+  else themeToggle.classList.remove("hide");
+  lastScroll = current <= 0 ? 0 : current;
+});
+
+// Mode otomatis + toggle manual
+const themeLabel = document.getElementById("themeLabel");
+const themeIcon = document.getElementById("themeIcon");
+const userPref = localStorage.getItem("theme");
+const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+function setTheme(mode) {
+  document.body.classList.remove("light", "dark");
+  document.body.classList.add(mode);
+  localStorage.setItem("theme", mode);
+  if (mode === "dark") {
+    themeLabel.textContent = "Dark";
+    themeIcon.innerHTML = '<path d="M12 2a9.93 9.93 0 0 0 9.93 9.93 10 10 0 1 1-9.93-9.93z"/>';
+  } else {
+    themeLabel.textContent = "Light";
+    themeIcon.innerHTML = '<path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.8zM1 13h3v-2H1zm10-9h2V1h-2zm8.66 1.66l-1.41-1.41-1.8 1.79 1.41 1.41zM17 13h3v-2h-3zm-5 8h2v-3h-2zm-7.07-2.93l1.41 1.41 1.79-1.8-1.41-1.41zM4.84 6.76L3.05 4.97l1.41-1.41 1.79 1.79zM12 6a6 6 0 1 0 6 6 6 6 0 0 0-6-6z"/>';
+  }
+}
+
+// Set tema awal
+if (userPref) setTheme(userPref);
+else setTheme(systemDark ? "dark" : "light");
+
+themeToggle.addEventListener("click", () => {
+  const newMode = document.body.classList.contains("light") ? "dark" : "light";
+  setTheme(newMode);
+});
+
+// Tahun otomatis
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
